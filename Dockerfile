@@ -1,5 +1,5 @@
 # Use the official Python 3.10 image
-FROM python:3.10-slim
+FROM python:3.10
 
 # Set the working directory in the container to /code
 WORKDIR /code
@@ -17,8 +17,8 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 COPY ./app /code/app
 
 # Copy Alembic configuration and migrations for database management
-#COPY ./alembic.ini /code/alembic.ini
-#COPY ./alembic /code/alembic
+COPY ./alembic.ini /code/alembic.ini
+COPY ./alembic /code/alembic
 
 # Optional: Copy test files to the container (can be used for testing later)
 COPY ./tests /code/tests
