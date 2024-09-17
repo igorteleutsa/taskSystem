@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 import uvicorn
 import logging
 from fastapi import FastAPI
@@ -5,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.settings import settings
 from app.core.router import router as api_router
+from app.users.routers import user_router
 
 # Initialize logging
 logger = logging.getLogger(__name__)
@@ -27,25 +30,15 @@ app.add_middleware(
 
 # Include the routers
 app.include_router(api_router)
+app.include_router(user_router, prefix="/users")
 
 
-# FastAPI Startup Event
-@app.on_event("startup")
-async def on_startup():
-    # Initialize anything needed at app startup
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     logger.info("Starting up the FastAPI application...")
-    # Example: Setup DB connections, RabbitMQ connections, etc.
-    # You can initialize database or message queues here if necessary
-    # e.g., await init_db()
-
-
-# FastAPI Shutdown Event
-@app.on_event("shutdown")
-async def on_shutdown():
-    # Perform any necessary cleanup tasks on shutdown
+    yield
+    # Shutdown logic
     logger.info("Shutting down the FastAPI application...")
-    # Example: Close DB connections, gracefully shut down RabbitMQ, etc.
-    # e.g., await close_db()
 
 
 # Custom logging configuration (can also be defined in a separate logging config file)
