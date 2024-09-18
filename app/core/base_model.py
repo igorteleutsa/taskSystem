@@ -1,4 +1,6 @@
 from sqlalchemy import Column, Integer, DateTime, func
+from sqlalchemy.orm import declared_attr
+
 from app.core.base import Base
 
 
@@ -16,3 +18,10 @@ class BaseModel(Base):
         onupdate=func.now(),
         nullable=False,
     )
+
+    @declared_attr
+    def __tablename__(cls) -> str:
+        return cls.__name__.lower()
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}(id={self.id})>"

@@ -60,7 +60,7 @@ async def test_update_user(test_client: AsyncClient):
 
     # Use the token to update the user's profile
     response = await test_client.put(
-        "/users/update",
+        "/users/",
         json={"name": "Updated", "surname": "User"},
         headers={"Authorization": f"Bearer {token}"},
     )
@@ -205,7 +205,7 @@ async def test_update_user_profile_as_manager(test_client: AsyncClient, create_u
 
     # Update the manager's profile
     update_response = await test_client.put(
-        "/users/update",
+        "/users/",
         json={"name": "UpdatedManager", "surname": "NewSurname"},
         headers={"Authorization": f"Bearer {token}"},
     )
