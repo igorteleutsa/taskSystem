@@ -75,7 +75,7 @@ async def create_users(test_client: AsyncClient):
     admin_token = admin_login.json()["access_token"]
 
     admin_role_update = await test_client.put(
-        "/users/update",
+        "/users/",
         json={"role": UserRole.ADMIN},
         headers={"Authorization": f"Bearer {admin_token}"},
     )
@@ -103,7 +103,7 @@ async def create_users(test_client: AsyncClient):
 
     # Update the manager's role
     manager_role_update = await test_client.put(
-        "/users/update",
+        "/users/",
         json={"role": UserRole.MANAGER},
         headers={"Authorization": f"Bearer {manager_token}"},
     )

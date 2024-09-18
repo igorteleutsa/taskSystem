@@ -41,14 +41,14 @@ class UserRouter:
             tags=["Users"],
         )
         user_router.add_api_route(
-            "/update",
+            "/",
             self.update_user,
             methods=["PUT"],
             response_model=UserOut,
             tags=["Users"],
         )
         user_router.add_api_route(
-            "/update/{user_id}",
+            "/{user_id}",
             self.update_user,
             methods=["PUT"],
             dependencies=[Depends(roles_required("admin"))],
@@ -105,7 +105,7 @@ class UserRouter:
             return await service.update_user(user_id, user_update_data)
 
         # If no user_id is provided, the user is updating their own profile
-        return await service.update_user(current_user["id"], user_update_data)
+        return await service.update_user(current_user.id, user_update_data)
 
     async def get_users(self, db: AsyncSession = Depends(get_db)):
         """Admin or Manager: Get a list of all users."""

@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.settings import settings
 from app.core.router import router as api_router
 from app.users.routers import user_router
+from app.projects.routers import project_router
 
 # Initialize logging
 logger = logging.getLogger(__name__)
@@ -31,6 +32,7 @@ app.add_middleware(
 # Include the routers
 app.include_router(api_router)
 app.include_router(user_router, prefix="/users")
+app.include_router(project_router, prefix="/projects")
 
 
 @asynccontextmanager

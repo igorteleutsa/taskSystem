@@ -121,7 +121,7 @@ Here are some basic endpoints that are currently available in the application:
     "role": "user"
   }
   ```
-- **CRUD USER (/users/{user_id}) Admin can update another user`s details/ 
+- **CRUD USER (/users/{user_id})**: Admin can update another user`s details/ 
     delete user/get_user
    ```
     GET/PUT/DELETE /users/{user_id}

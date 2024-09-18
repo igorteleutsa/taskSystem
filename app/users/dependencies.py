@@ -47,18 +47,12 @@ async def get_current_user(
     if user is None:
         raise credentials_exception
 
-    return {
-        "id": user.id,
-        "email": user.email,
-        "role": user.role,
-        "name": user.name,
-        "surname": user.surname,
-    }
+    return user
 
 
 def roles_required(*required_roles: str):
     def role_checker(current_user: dict = Depends(get_current_user)):
-        user_role = current_user.get("role")
+        user_role = current_user.role
         if user_role not in required_roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN, detail="Insufficient permissions"
