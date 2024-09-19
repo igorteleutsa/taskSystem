@@ -63,3 +63,12 @@ class ProjectRepository(BaseRepository):
         project.status = new_status
         await self.db_session.commit()
         return await self.get_by_id(project_id)
+
+    async def get_project_member(self, project_id: int, user_id: int) -> ProjectMember:
+        """Retrieve a project member by project ID and user ID."""
+        result = await self.db_session.execute(
+            select(ProjectMember)
+            .where(ProjectMember.project_id == project_id)
+            .where(ProjectMember.user_id == user_id)
+        )
+        return result.scalars().first()

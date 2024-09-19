@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
@@ -8,9 +10,13 @@ from app.core.base import Base
 from app.core.settings import settings
 from app.main import app
 from app.core.database import get_db
+from app.tickets.schemas import TicketCreate
 from app.users.models import UserRole
 
 # Create a test engine for the database
+from app.users.schemas import UserCreate
+from app.users.services import UserService
+
 engine_test = create_async_engine(settings.DATABASE_URL, poolclass=NullPool)
 
 # Create a session maker for the test database
@@ -128,7 +134,7 @@ async def create_project(test_client: AsyncClient, create_users):
     # Login as the user
     login_response = await test_client.post(
         "/users/login",
-        data={"username": "user@example.com", "password": "userpassword"},
+        data={"username": "admin@example.com", "password": "adminpassword"},
     )
     token = login_response.json()["access_token"]
 
@@ -138,3 +144,83 @@ async def create_project(test_client: AsyncClient, create_users):
         "/projects/", json=project_data, headers={"Authorization": f"Bearer {token}"}
     )
     return response.json()["id"], token
+
+
+@pytest.fixture
+async def create_ticket(create_project, test_client: AsyncClient):
+    """Fixture to create a ticket for tests."""
+    project_id, token = await create_project
+
+    # Assuming you have a function or method to retrieve the current user's id
+    user_response = await test_client.get(
+        "/users/me",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    user = user_response.json()
+    responsible_user_id = user["id"]
+
+    ticket_data = TicketCreate(
+        title="New Ticket",
+        description="This is a test ticket",
+        priority=1,  # Assuming priority is an integer or change it if it's an enum
+        status="todo",
+        project_id=project_id,
+        responsible_user_id=responsible_user_id,  # Include this required field
+    )
+
+    # Create the ticket
+    response = await test_client.post(
+        "/tickets/",
+        json=ticket_data.dict(),
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 200
+    ticket = response.json()
+
+    return ticket["id"], token
+
+
+@pytest.fixture
+async def manager_user(test_client: AsyncClient):
+    """
+    Fixture to create a manager user and return the manager's id and access token.
+    """
+    # Sign up as a manager
+    # Use a unique email for the manager user
+    unique_email = f"manager_{uuid.uuid4()}@example.com"
+    manager_signup = await test_client.post(
+        "/users/signup",
+        json={
+            "email": unique_email,
+            "password": "managerpassword",
+            "name": "Manager",
+            "surname": "User",
+        },
+    )
+    assert manager_signup.status_code == 200
+
+    # Log in as the manager to get the access token
+    manager_login = await test_client.post(
+        "/users/login",
+        data={"username": "manager@example.com", "password": "managerpassword"},
+    )
+    assert manager_login.status_code == 200
+    manager_token = manager_login.json()["access_token"]
+
+    # Get the manager's details (id)
+    user_response = await test_client.get(
+        "/users/me",
+        headers={"Authorization": f"Bearer {manager_token}"},
+    )
+    manager_id = user_response.json()["id"]
+
+    # Assign manager role to the user
+    role_update = await test_client.put(
+        "/users/",
+        json={"role": UserRole.MANAGER},
+        headers={"Authorization": f"Bearer {manager_token}"},
+    )
+    assert role_update.status_code == 200
+
+    return manager_id, manager_token

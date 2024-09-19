@@ -1,7 +1,15 @@
-from sqlalchemy import Column, String, Text, ForeignKey, Enum as SqlEnum, Integer, Table
+from sqlalchemy import (
+    Column,
+    String,
+    Text,
+    ForeignKey,
+    Enum as SqlEnum,
+    Integer,
+    Table,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import relationship
 
-from app.core.base import Base
 from app.core.base_model import BaseModel
 from enum import Enum
 
@@ -32,6 +40,9 @@ class Project(BaseModel):
     members = relationship(
         "User", secondary="project_members", back_populates="projects"
     )
+    tickets = relationship(
+        "Ticket", back_populates="project", cascade="all, delete-orphan"
+    )
 
 
 class ProjectMember(BaseModel):
@@ -45,6 +56,11 @@ class ProjectMember(BaseModel):
     user = relationship(
         "User", back_populates="project_memberships", overlaps="projects,members"
     )
+
     project = relationship(
         "Project", back_populates="project_memberships", overlaps="members,projects"
+    )
+    assigned_tickets = relationship("TicketExecutor", back_populates="project_member")
+    __table_args__ = (
+        UniqueConstraint("user_id", "project_id", name="uq_user_project"),
     )

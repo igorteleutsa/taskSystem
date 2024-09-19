@@ -4,6 +4,8 @@ from sqlalchemy.orm import relationship
 from app.core.base_model import BaseModel
 from enum import Enum
 
+from app.tickets.models import Ticket
+
 
 class UserRole(str, Enum):
     USER = "user"
@@ -32,4 +34,9 @@ class User(BaseModel):
     )
     projects = relationship(
         "Project", secondary="project_members", back_populates="members"
+    )
+    responsible_tickets = relationship(
+        "Ticket",
+        back_populates="responsible_user",
+        foreign_keys=[Ticket.responsible_user_id],
     )
