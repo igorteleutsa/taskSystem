@@ -3,6 +3,7 @@ from httpx import AsyncClient
 from jose import jwt
 
 from app.core.settings import settings
+from app.projects.models import ProjectStatus
 
 
 @pytest.mark.asyncio
@@ -128,3 +129,34 @@ async def test_delete_project(test_client: AsyncClient, create_users):
     )
     assert delete_response.status_code == 200
     assert delete_response.json()["message"] == "Project deleted successfully"
+
+
+@pytest.mark.asyncio
+async def test_change_project_status(test_client: AsyncClient, create_project):
+    """Test changing the status of a project."""
+    project_id, token = await create_project
+    # Change status to inactive
+    response = await test_client.put(
+        f"/projects/{project_id}/status",
+        json={"new_status": ProjectStatus.INACTIVE},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 200
+    assert response.json()["status"] == "inactive"
+
+    # Change status to ARCHIVED
+    response = await test_client.put(
+        f"/projects/{project_id}/status",
+        json={"new_status": ProjectStatus.ARCHIVED},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 200
+    assert response.json()["status"] == ProjectStatus.ARCHIVED
+
+    # Test invalid status change
+    response = await test_client.put(
+        f"/projects/{project_id}/status",
+        json={"new_status": "INVALID_STATUS"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 422

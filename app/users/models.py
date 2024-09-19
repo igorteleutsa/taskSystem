@@ -22,6 +22,14 @@ class User(BaseModel):
     role = Column(SqlEnum(UserRole), nullable=False, default=UserRole.USER)
 
     # Relationship with projects (as owner)
-    projects = relationship(
+    owned_projects = relationship(
         "Project", back_populates="owner", cascade="all, delete-orphan"
+    )
+
+    # Relationship with projects as a member (many-to-many via ProjectMember class)
+    project_memberships = relationship(
+        "ProjectMember", back_populates="user", overlaps="projects,members"
+    )
+    projects = relationship(
+        "Project", secondary="project_members", back_populates="members"
     )

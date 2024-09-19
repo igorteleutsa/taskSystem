@@ -46,3 +46,11 @@ class ProjectOut(ProjectBase):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ChangeStatusSchema(BaseModel):
+    new_status: ProjectStatus
+
+
+class AddMemberRequest(BaseModel):
+    user_id: int
