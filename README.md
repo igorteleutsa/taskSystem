@@ -60,72 +60,8 @@ alembic upgrade head
 ```
 ## Endpoints
 
-Here are some basic endpoints that are currently available in the application:
+- **Docs (`/docs`)**: displays all possible endpoints
 
-- **Root (`/`)**: Welcome message to verify that the app is running.
-  
-  ```
-  GET /
-  Response:
-  {
-    "message": "Welcome to the Task Tracker API!"
-  }
-  ```
-  ### AUTH
-- **Sign Up (/users/signup)**: Create a new user.
-  ```
-  POST /users/signup
-  Request Body:
-  {
-  "email": "user@example.com",
-  "password": "password123",
-  "name": "John",
-  "surname": "Doe"
-  }
-  
-  Response:
-  {
-  "id": 1,
-  "email": "user@example.com",
-  "name": "John",
-  "surname": "Doe",
-  "role": "user"
-  }
-  ```
-- **Login (/users/login)**: Authenticate a user and get a JWT token.
-  ```
-  POST /users/login
-  Request Body (form-data):
-  {
-    "username": "user@example.com",
-    "password": "password123"
-  }
-  
-  Response:
-  {
-    "access_token": "<token>",
-    "token_type": "bearer"
-  }
-
-  ```
-  ### User Endpoints
-- **Get Current User (/users/me)**: Get the currently logged-in user.
-  ```
-  GET /users/me
-  Response:
-  {
-    "id": 1,
-    "email": "user@example.com",
-    "name": "John",
-    "surname": "Doe",
-    "role": "user"
-  }
-  ```
-- **CRUD USER (/users/{user_id})**: Admin can update another user`s details/ 
-    delete user/get_user
-   ```
-    GET/PUT/DELETE /users/{user_id}
-   ```
   
 
 ## Running Tests

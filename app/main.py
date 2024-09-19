@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.settings import settings
 from app.core.router import router as api_router
+from app.tickets.routers import ticket_router
 from app.users.routers import user_router
 from app.projects.routers import project_router
 
@@ -33,6 +34,7 @@ app.add_middleware(
 app.include_router(api_router)
 app.include_router(user_router, prefix="/users")
 app.include_router(project_router, prefix="/projects")
+app.include_router(ticket_router, prefix="/tickets")
 
 
 @asynccontextmanager

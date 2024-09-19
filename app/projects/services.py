@@ -153,3 +153,8 @@ class ProjectService:
             )
 
         return await self.repository.change_project_status(project_id, new_status)
+
+    async def is_user_member_of_project(self, project_id: int, user_id: int) -> bool:
+        """Check if the user is a member of the given project."""
+        project_member = await self.repository.get_project_member(project_id, user_id)
+        return project_member is not None
