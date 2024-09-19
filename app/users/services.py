@@ -28,7 +28,7 @@ class UserService:
 
         # Create the user
         new_user = await self.repository.create(user_dict)
-        return UserOut.from_orm(new_user)
+        return UserOut.model_validate(new_user)
 
     async def authenticate_user(self, email: str, password: str) -> User | None:
         """Authenticate a user by verifying email and password."""
@@ -48,12 +48,12 @@ class UserService:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="User not found."
             )
-        return UserOut.from_orm(user)
+        return UserOut.model_validate(user)
 
     async def get_users_by_role(self, role: str) -> list[UserOut]:
         """Fetch a list of users by their role."""
         users = await self.repository.get_user_by_role(role)
-        return [UserOut.from_orm(user) for user in users]
+        return [UserOut.model_validate(user) for user in users]
 
     async def update_user(self, user_id: int, user_update_data: UserUpdate) -> UserOut:
         """Update an existing user's details."""
@@ -71,7 +71,7 @@ class UserService:
             update_data["hashed_password"] = hash_password(update_data.pop("password"))
 
         updated_user = await self.repository.update(user_id, update_data)
-        return UserOut.from_orm(updated_user)
+        return UserOut.model_validate(updated_user)
 
     async def delete_user(self, user_id: int) -> None:
         """Delete a user by their ID."""

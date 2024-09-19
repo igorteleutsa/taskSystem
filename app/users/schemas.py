@@ -31,10 +31,4 @@ class UserUpdate(BaseModel):
 
 class UserOut(UserBase):
     id: int
-
-    @classmethod
-    def from_orm(cls, obj):
-        # Use model_validate instead of from_orm
-        return cls.model_validate(obj)
-
     model_config = ConfigDict(from_attributes=True)

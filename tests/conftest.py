@@ -120,3 +120,21 @@ async def create_users(test_client: AsyncClient):
         },
     )
     assert user_signup.status_code == 200
+
+
+@pytest.fixture
+async def create_project(test_client: AsyncClient, create_users):
+    """Create a project for testing."""
+    # Login as the user
+    login_response = await test_client.post(
+        "/users/login",
+        data={"username": "user@example.com", "password": "userpassword"},
+    )
+    token = login_response.json()["access_token"]
+
+    # Create a project
+    project_data = {"title": "Test Project", "description": "Project description."}
+    response = await test_client.post(
+        "/projects/", json=project_data, headers={"Authorization": f"Bearer {token}"}
+    )
+    return response.json()["id"], token
